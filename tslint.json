@@ -1,10 +1,45 @@
 {
-  "extends": ["tslint:recommended", "tslint-react", "tslint-config-prettier"],
+  "extends": ["tslint-react", "tslint-config-airbnb"],
+  "defaultSeverity": "warning",
+  "jsRules": {
+    "no-empty": true
+  },
   "linterOptions": {
-    "exclude": [
-      "config/**/*.js",
-      "node_modules/**/*.ts",
-      "coverage/lcov-report/*.js"
-    ]
+    "exclude": ["config/**/*.js", "node_modules/**/*.ts", "coverage/lcov-report/*.js"]
+  },
+  "rules": {
+    "indent": [true, "spaces", 2],
+    "variable-name": false,
+    "align": false,
+    "no-boolean-literal-compare": false,
+    "jsx-boolean-value": false,
+    "max-line-length": [false, 120],
+    "trailing-comma": false,
+    "array-type": [true, "generic"],
+    "prefer-array-literal": ["generic"],
+    "semicolon": [true, "always", "ignore-bound-class-methods"],
+    "jsx-no-lambda": false,
+    "jsx-no-multiline-js": false,
+    "match-default-export-name": false,
+    "quotemark": [true, "single", "jsx-double"],
+    "import-name": false,
+    "typedef-whitespace": [
+      true,
+      {
+        "call-signature": "nospace",
+        "index-signature": "nospace",
+        "parameter": "nospace",
+        "property-declaration": "nospace",
+        "variable-declaration": "nospace"
+      },
+      {
+        "call-signature": "onespace",
+        "index-signature": "onespace",
+        "parameter": "onespace",
+        "property-declaration": "onespace",
+        "variable-declaration": "onespace"
+      }
+    ],
+    "typedef": [true, "property-declaration"]
   }
 }
