@@ -2,9 +2,9 @@ import * as React from 'react';
 
 // import './CarSpecsTab.css';
 
-interface Props {}
-interface State {}
-class DeparturesTab extends React.Component<Props, State> {
+interface IProps {}
+interface IState {}
+class DeparturesTab extends React.Component<IProps, IState> {
   render() {
     return <div className="arrivals">DeparturesTab</div>;
   }
