@@ -1,33 +1,35 @@
 import * as React from 'react';
 
-import { Tabs } from 'antd';
+import { Input, Tabs } from 'antd';
 
 import ArrivalsTab from './components/ArrivalsTab/ArrivalsTab';
 import DelaysTab from './components/DelaysTab/DelaysTab';
 import DeparturesTab from './components/DeparturesTab/DeparturesTab';
+import { ITabConfig } from './types';
 
 import './App.css';
 
 const TabPane = Tabs.TabPane;
+const Search = Input.Search;
 
-const tabs = [
+const tabs: Array<ITabConfig> = [
   {
     name: 'Прилет',
     component: ArrivalsTab
   },
   {
-    name: 'Задержка',
-    component: DelaysTab
-  },
-  {
     name: 'Вылет',
     component: DeparturesTab
+  },
+  {
+    name: 'Задержка',
+    component: DelaysTab
   }
 ];
 
 class App extends React.Component {
-  renderPane = (tab: any) => {
-    const Component: any = tab.component; // TODO: Fix any
+  renderPane = (tab: ITabConfig) => {
+    const Component: React.ComponentClass = tab.component;
 
     return (
       <TabPane tab={tab.name} key={tab.name}>
@@ -37,7 +39,12 @@ class App extends React.Component {
   };
 
   public render() {
-    return <Tabs>{tabs.map(this.renderPane)}</Tabs>;
+    return (
+      <React.Fragment>
+        <Search />
+        <Tabs>{tabs.map(this.renderPane)}</Tabs>
+      </React.Fragment>
+    );
   }
 }
 
