@@ -1,21 +1,43 @@
 import * as React from 'react';
+
+import { Tabs } from 'antd';
+
+import ArrivalsTab from './components/ArrivalsTab/ArrivalsTab';
+import DelaysTab from './components/DelaysTab/DelaysTab';
+import DeparturesTab from './components/DeparturesTab/DeparturesTab';
+
 import './App.css';
 
-import logo from './logo.svg';
+const TabPane = Tabs.TabPane;
+
+const tabs = [
+  {
+    name: 'Прилет',
+    component: ArrivalsTab
+  },
+  {
+    name: 'Задержка',
+    component: DelaysTab
+  },
+  {
+    name: 'Вылет',
+    component: DeparturesTab
+  }
+];
 
 class App extends React.Component {
-  public render() {
+  renderPane = (tab: any) => {
+    const Component: any = tab.component; // TODO: Fix any
+
     return (
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <h1 className="App-title">Welcome to React</h1>
-        </header>
-        <p className="App-intro">
-          To get started, edit <code>src/App.tsx</code> and save to reload.
-        </p>
-      </div>
+      <TabPane tab={tab.name} key={tab.name}>
+        <Component />
+      </TabPane>
     );
+  };
+
+  public render() {
+    return <Tabs>{tabs.map(this.renderPane)}</Tabs>;
   }
 }
 
