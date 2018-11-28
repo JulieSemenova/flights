@@ -5,8 +5,16 @@ import { Input, Tabs, Select } from 'antd';
 import ArrivalsTab from './components/ArrivalsTab/ArrivalsTab';
 import DelaysTab from './components/DelaysTab/DelaysTab';
 import DeparturesTab from './components/DeparturesTab/DeparturesTab';
-import { ReduxState, ITabConfig, Language } from './types';
+import {
+  ReduxState,
+  ITabConfig,
+  ILanguage,
+  LanguageType,
+  IAirport,
+  AirportCode
+} from './types';
 import { selectLanguage } from './redux/language';
+import { selectAirport } from './redux/airport';
 
 import './App.css';
 
@@ -15,20 +23,44 @@ const Search = Input.Search;
 const Option = Select.Option;
 
 interface IProps {
-  language: Language.State;
-  selectLanguage: Language.AC_Select;
+  language: ILanguage.State;
+  selectLanguage: ILanguage.AC_Select;
+  airport: IAirport.State;
+  selectAirport: IAirport.AC_Select;
 }
-class App extends React.Component<IProps> {
+interface IState {
+  language: LanguageType;
+}
+
+class App extends React.Component<IProps, IState> {
+  state: IState = {
+    language: 'ru'
+  };
+  // componentDidUpdate() {
+  //   console.log('update');
+  // }
   renderLanguageSelect = () => (
     <Select
       defaultValue={this.props.language.selectedLanguage}
       style={{ marginBottom: '20px' }}
-      onChange={(value: Language) => this.props.selectLanguage(value)}
+      onChange={(value: LanguageType) => this.props.selectLanguage(value)}
     >
       <Option value="ru">RU</Option>
       <Option value="en">EN</Option>
     </Select>
   );
+
+  renderAirportSelect = () => {
+    <Select
+      defaultValue={this.props.airport.selectedAirport}
+      style={{ marginBottom: '20px' }}
+      onChange={(value: AirportCode) => this.props.selectAirport(value)}
+    >
+      <Option value="s9600216">Домодедово</Option>
+      <Option value="s9600215">Внуково</Option>
+      <Option value="s9600213">Шереметьево</Option>
+    </Select>;
+  };
 
   renderPane = (tab: ITabConfig) => {
     const Component: React.ComponentClass = tab.component;
@@ -68,6 +100,8 @@ class App extends React.Component<IProps> {
     return (
       <React.Fragment>
         {this.renderLanguageSelect()}
+        {this.renderAirportSelect()}
+
         <Search style={{ marginBottom: '10px' }} />
         <Tabs>{tabs.map(this.renderPane)}</Tabs>
       </React.Fragment>
@@ -76,6 +110,6 @@ class App extends React.Component<IProps> {
 }
 
 export default connect(
-  (state: ReduxState) => ({ language: state.language }),
-  { selectLanguage }
+  (state: ReduxState) => ({ language: state.language, airport: state.airport }),
+  { selectLanguage, selectAirport }
 )(App);

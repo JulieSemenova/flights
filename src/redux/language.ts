@@ -1,9 +1,9 @@
-import { Action, Language } from '../types';
+import { Action, ILanguage, LanguageType } from '../types';
 import dictionaryMock from './dictionaryMock';
 
-export const SELECT_LANGUAGE: string = 'error/SELECT_LANGUAGE';
+export const SELECT_LANGUAGE: string = 'language/SELECT_LANGUAGE';
 
-export const initialState: Language.State = {
+export const initialState: ILanguage.State = {
   selectedLanguage: 'ru',
   dictionary: {
     arrivals: 'прилеты',
@@ -13,9 +13,9 @@ export const initialState: Language.State = {
 };
 
 export default function reducer(
-  state: Language.State = initialState,
+  state: ILanguage.State = initialState,
   action: Action = {}
-): Language.State {
+): ILanguage.State {
   switch (action.type) {
     case SELECT_LANGUAGE: {
       return {
@@ -29,7 +29,7 @@ export default function reducer(
   }
 }
 
-export const selectLanguage: Language.AC_Select = (data: Language): Action => {
+export const selectLanguage: ILanguage.AC_Select = (data: LanguageType): Action => {
   return {
     data,
     type: SELECT_LANGUAGE
