@@ -20,6 +20,7 @@ export interface ReduxState {
 export namespace Language {
   export interface State {
     selectedLanguage: Language;
+    dictionary: { [key: string]: string };
   }
 
   export type AC_Select = (value: Language) => Action;

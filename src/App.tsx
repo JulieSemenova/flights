@@ -15,35 +15,13 @@ const Search = Input.Search;
 const Option = Select.Option;
 
 interface IProps {
-  language: Language.State['selectedLanguage'];
+  language: Language.State;
   selectLanguage: Language.AC_Select;
 }
-interface IState {
-  // language: Language.State;
-}
-
-const tabs: Array<ITabConfig> = [
-  {
-    name: 'Прилет',
-    component: ArrivalsTab
-  },
-  {
-    name: 'Вылет',
-    component: DeparturesTab
-  },
-  {
-    name: 'Задержка',
-    component: DelaysTab
-  }
-];
-class App extends React.Component<IProps, IState> {
-  // state: IState = {
-  //   language: this.props.language
-  // };
-
+class App extends React.Component<IProps> {
   renderLanguageSelect = () => (
     <Select
-      defaultValue={this.props.language}
+      defaultValue={this.props.language.selectedLanguage}
       style={{ marginBottom: '20px' }}
       onChange={(value: Language) => this.props.selectLanguage(value)}
     >
@@ -56,13 +34,37 @@ class App extends React.Component<IProps, IState> {
     const Component: React.ComponentClass = tab.component;
 
     return (
-      <TabPane tab={tab.name} key={tab.name}>
+      <TabPane tab={this.getPaneName(tab.name)} key={tab.name}>
         <Component />
       </TabPane>
     );
   };
 
+  getPaneName = (name: string) => {
+    const { dictionary } = this.props.language;
+    return (
+      <span style={{ textTransform: 'capitalize' }}>
+        {dictionary[name] ? dictionary[name] : name}
+      </span>
+    );
+  };
+
   public render() {
+    const tabs: Array<ITabConfig> = [
+      {
+        name: 'arrivals',
+        component: ArrivalsTab
+      },
+      {
+        name: 'departures',
+        component: DeparturesTab
+      },
+      {
+        name: 'delays',
+        component: DelaysTab
+      }
+    ];
+
     return (
       <React.Fragment>
         {this.renderLanguageSelect()}
@@ -74,6 +76,6 @@ class App extends React.Component<IProps, IState> {
 }
 
 export default connect(
-  (state: ReduxState) => ({ language: state.language.selectedLanguage }),
+  (state: ReduxState) => ({ language: state.language }),
   { selectLanguage }
 )(App);

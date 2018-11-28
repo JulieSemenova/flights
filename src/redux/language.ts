@@ -1,9 +1,15 @@
 import { Action, Language } from '../types';
+import dictionaryMock from './dictionaryMock';
 
 export const SELECT_LANGUAGE: string = 'error/SELECT_LANGUAGE';
 
 export const initialState: Language.State = {
-  selectedLanguage: 'ru'
+  selectedLanguage: 'ru',
+  dictionary: {
+    arrivals: 'прилеты',
+    departures: 'вылеты',
+    delays: 'задержки'
+  }
 };
 
 export default function reducer(
@@ -14,18 +20,18 @@ export default function reducer(
     case SELECT_LANGUAGE: {
       return {
         ...state,
-        selectedLanguage: action.value
+        selectedLanguage: action.data,
+        dictionary: dictionaryMock[action.data]
       };
     }
-
     default:
       return state;
   }
 }
 
-export const selectLanguage: Language.AC_Select = (value: Language): Action => {
+export const selectLanguage: Language.AC_Select = (data: Language): Action => {
   return {
-    value,
+    data,
     type: SELECT_LANGUAGE
   };
 };
