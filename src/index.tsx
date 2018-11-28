@@ -1,14 +1,16 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
+import { createStore } from 'redux';
 
 import App from './App';
+import reducers from './redux/reducers/reducers';
 import './index.css';
 import registerServiceWorker from './registerServiceWorker';
-import configureStore from './redux/configureStore';
 
-const store = configureStore();
 const mountPoint = document.getElementById('root') as HTMLElement;
+const store = createStore(reducers);
+
 ReactDOM.render(
   <Provider store={store}>
     <App />
