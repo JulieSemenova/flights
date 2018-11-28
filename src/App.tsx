@@ -1,16 +1,16 @@
 import * as React from 'react';
-
-import { Input, Tabs } from 'antd';
+import { Input, Tabs, Select } from 'antd';
 
 import ArrivalsTab from './components/ArrivalsTab/ArrivalsTab';
 import DelaysTab from './components/DelaysTab/DelaysTab';
 import DeparturesTab from './components/DeparturesTab/DeparturesTab';
-import { ITabConfig } from './types';
+import { ITabConfig, Languages } from './types';
 
 import './App.css';
 
 const TabPane = Tabs.TabPane;
 const Search = Input.Search;
+const Option = Select.Option;
 
 const tabs: Array<ITabConfig> = [
   {
@@ -26,8 +26,25 @@ const tabs: Array<ITabConfig> = [
     component: DelaysTab
   }
 ];
+interface IProps {}
+interface IState {
+  language: Languages;
+}
+class App extends React.Component<IProps, IState> {
+  state: IState = {
+    language: 'ru'
+  };
+  renderLanguageSelect = () => (
+    <Select
+      defaultValue={this.state.language}
+      style={{ marginBottom: '20px' }}
+      onChange={(value: Languages) => this.setState({ language: value })}
+    >
+      <Option value="ru">RU</Option>
+      <Option value="en">EN</Option>
+    </Select>
+  );
 
-class App extends React.Component {
   renderPane = (tab: ITabConfig) => {
     const Component: React.ComponentClass = tab.component;
 
@@ -41,7 +58,8 @@ class App extends React.Component {
   public render() {
     return (
       <React.Fragment>
-        <Search />
+        {this.renderLanguageSelect()}
+        <Search style={{ marginBottom: '10px' }} />
         <Tabs>{tabs.map(this.renderPane)}</Tabs>
       </React.Fragment>
     );
