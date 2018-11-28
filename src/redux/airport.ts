@@ -1,5 +1,5 @@
 import { Action, IAirport, AirportCode } from '../types';
-import { API_SHEDULE, API_KEY } from '../constants';
+import { API_KEY } from '../constants';
 import axios from 'axios';
 
 export const SELECT_AIRPORT: string = 'airport/SELECT_AIRPORT';
@@ -60,7 +60,7 @@ export const selectAirport: IAirport.AC_Select = (data: AirportCode): Action => 
 
 export const fetchArrivals: any = (data: AirportCode): Action => {
   const request = axios.get(
-    `${API_SHEDULE}/?apikey=${API_KEY}&station=${data}&transport_types=plane&event=departure&date=2018-11-28`
+    `/schedule/?apikey=${API_KEY}&station=${data}&transport_types=plane&event=departure&date=2018-11-28`
   );
   return {
     type: FETCH_ARRIVALS,

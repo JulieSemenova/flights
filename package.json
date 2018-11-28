@@ -2,6 +2,7 @@
   "name": "flights",
   "version": "0.1.0",
   "private": true,
+  "proxy": "https://api.rasp.yandex.net/v3.0/",
   "dependencies": {
     "antd": "^3.10.9",
     "axios": "^0.18.0",
