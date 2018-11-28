@@ -1,16 +1,26 @@
 import * as React from 'react';
+import { connect } from 'react-redux';
 import { Input, Tabs, Select } from 'antd';
 
 import ArrivalsTab from './components/ArrivalsTab/ArrivalsTab';
 import DelaysTab from './components/DelaysTab/DelaysTab';
 import DeparturesTab from './components/DeparturesTab/DeparturesTab';
-import { ITabConfig, Languages } from './types';
+import { ReduxState, ITabConfig, Language } from './types';
+import { selectLanguage } from './redux/language';
 
 import './App.css';
 
 const TabPane = Tabs.TabPane;
 const Search = Input.Search;
 const Option = Select.Option;
+
+interface IProps {
+  language: Language.State['selectedLanguage'];
+  selectLanguage: Language.AC_Select;
+}
+interface IState {
+  // language: Language.State;
+}
 
 const tabs: Array<ITabConfig> = [
   {
@@ -26,19 +36,16 @@ const tabs: Array<ITabConfig> = [
     component: DelaysTab
   }
 ];
-interface IProps {}
-interface IState {
-  language: Languages;
-}
 class App extends React.Component<IProps, IState> {
-  state: IState = {
-    language: 'ru'
-  };
+  // state: IState = {
+  //   language: this.props.language
+  // };
+
   renderLanguageSelect = () => (
     <Select
-      defaultValue={this.state.language}
+      defaultValue={this.props.language}
       style={{ marginBottom: '20px' }}
-      onChange={(value: Languages) => this.setState({ language: value })}
+      onChange={(value: Language) => this.props.selectLanguage(value)}
     >
       <Option value="ru">RU</Option>
       <Option value="en">EN</Option>
@@ -66,4 +73,7 @@ class App extends React.Component<IProps, IState> {
   }
 }
 
-export default App;
+export default connect(
+  (state: ReduxState) => ({ language: state.language.selectedLanguage }),
+  { selectLanguage }
+)(App);
