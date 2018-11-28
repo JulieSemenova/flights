@@ -1,5 +1,5 @@
-import { Action, ILanguage, LanguageType } from '../types';
-import dictionaryMock from './dictionaryMock';
+import { Action, ILanguage, LanguageType } from '../../types';
+import dictionaryMock from '../dictionaryMock';
 
 export const SELECT_LANGUAGE: string = 'language/SELECT_LANGUAGE';
 

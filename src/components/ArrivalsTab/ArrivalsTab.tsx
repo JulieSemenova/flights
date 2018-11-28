@@ -3,7 +3,11 @@ import { connect } from 'react-redux';
 import { Table } from 'antd';
 
 import { ReduxState, IAirport } from '../../types';
-import { fetchArrivals } from '../../redux/airport';
+import {
+  fetchArrivals,
+  fetchArrivalsSuccess,
+  fetchArrivalsError
+} from '../../redux/reducers/airport';
 
 interface IProps {
   airport: IAirport.State;
@@ -58,6 +62,7 @@ class ArrivalsTab extends React.Component<IProps, IState> {
   render() {
     return (
       <div className="arrivals">
+        {console.log(this.props)}
         <Table dataSource={dataSource} columns={columns} rowKey="thread.uid" />
       </div>
     );
@@ -66,5 +71,5 @@ class ArrivalsTab extends React.Component<IProps, IState> {
 
 export default connect(
   (state: ReduxState) => ({ airport: state.airport }),
-  { fetchArrivals }
+  { fetchArrivals, fetchArrivalsSuccess, fetchArrivalsError }
 )(ArrivalsTab);

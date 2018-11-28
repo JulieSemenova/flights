@@ -1,5 +1,5 @@
-import { Action, IAirport, AirportCode } from '../types';
-import { API_KEY } from '../constants';
+import { Action, IAirport, AirportCode } from '../../types';
+import { API_KEY } from '../../constants';
 import axios from 'axios';
 
 export const SELECT_AIRPORT: string = 'airport/SELECT_AIRPORT';
@@ -29,10 +29,10 @@ export default function reducer(
     case FETCH_ARRIVALS:
       return {
         ...state,
-        isFetching: true,
-        error: null
+        isFetching: true
       };
     case FETCH_ARRIVALS_SUCCESS:
+      console.log(action.data);
       return {
         ...state,
         isFetching: false,
@@ -59,25 +59,28 @@ export const selectAirport: IAirport.AC_Select = (data: AirportCode): Action => 
 };
 
 export const fetchArrivals: any = (data: AirportCode): Action => {
-  const request = axios.get(
-    `/schedule/?apikey=${API_KEY}&station=${data}&transport_types=plane&event=departure&date=2018-11-28`
-  );
+  axios
+    .get(
+      `/schedule/?apikey=${API_KEY}&station=${data}&transport_types=plane&event=departure&date=2018-11-28`
+    )
+    .then(response => fetchArrivalsSuccess(response))
+    .catch(error => console.log(error));
   return {
-    type: FETCH_ARRIVALS,
-    payload: request
+    type: FETCH_ARRIVALS
   };
 };
 
 export const fetchArrivalsSuccess: any = (data: any): Action => {
+  console.log('sdfj');
   return {
-    type: FETCH_ARRIVALS_SUCCESS,
-    payload: data
+    data,
+    type: FETCH_ARRIVALS_SUCCESS
   };
 };
 
 export const fetchArrivalsError: any = (error: AirportCode): Action => {
   return {
-    type: FETCH_ARRIVALS_FAIL,
-    payload: error
+    error,
+    type: FETCH_ARRIVALS_FAIL
   };
 };

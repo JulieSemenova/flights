@@ -13,8 +13,8 @@ import {
   IAirport,
   AirportCode
 } from './types';
-import { selectLanguage } from './redux/language';
-import { selectAirport } from './redux/airport';
+import { selectLanguage } from './redux/reducers/language';
+import { selectAirport } from './redux/reducers/airport';
 
 import './App.css';
 
