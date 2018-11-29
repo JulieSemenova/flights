@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import * as format from 'date-fns/format';
-
-import { Table } from 'antd';
+import { Table, Badge } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 
 import { ReduxState, IFlights, ISOString, LanguageType, AirportCode } from '../../types';
 import { fetchFlights } from '../../redux/reducers/flights';
 import { FORMAT_DAY, FORMAT_TIME } from 'src/constants';
+import GetTranslation from '../GetTranslation/GetTranslation';
 
 interface OwnProps {
   language: LanguageType;
@@ -44,10 +44,11 @@ class ArrivalsTab extends React.Component<IProps, IState> {
     console.log(airportCode, language, 'arrival', date, offset);
   }
 
-  componentDidUpdate(prevProps: IProps) {
+  componentDidUpdate(prevProps: IProps, prevState: IState) {
     const { airportCode, language, date } = this.props;
-
-    if (this.props !== prevProps) {
+    const { pageSize, currentPage } = this.state;
+    const offset = currentPage === 1 && (currentPage - 1) * pageSize;
+    if (this.props !== prevProps || this.state !== prevState) {
       // this.props.fetchFlights(
       //   airportCode,
       //   language,
@@ -55,26 +56,26 @@ class ArrivalsTab extends React.Component<IProps, IState> {
       // offset,
       //   date
       // );
-      console.log(airportCode, language, 'arrival', date);
+      console.log(airportCode, language, 'arrival', date, offset);
     }
   }
 
   getColumns = () => {
     const flightColumns: Array<ColumnProps<IFlights.Flight>> = [
       {
-        title: 'Дата рейса',
+        title: <GetTranslation word="date" />,
         dataIndex: 'arrival',
         key: 'arrival',
         render: this.renderFlightDate
       },
       {
-        title: 'Рейс',
+        title: <GetTranslation word="flight" />,
         dataIndex: 'thread.title',
         key: 'thread.title',
         render: this.renderFlightInfo
       },
       {
-        title: 'Перевозчик',
+        title: <GetTranslation word="carrier" />,
         dataIndex: 'thread.carrier',
         key: 'thread.carrier'
       }
@@ -92,12 +93,14 @@ class ArrivalsTab extends React.Component<IProps, IState> {
     );
   };
 
-  renderFlightDate = (arrival: ISOString) => {
+  renderFlightDate = (_: any, flight: IFlights.Flight) => {
+    const { arrival, is_fuzzy } = flight;
     return (
       <React.Fragment>
-        {format(arrival, FORMAT_TIME)}
+        {is_fuzzy && <Badge status="error" />}
+        {format(arrival!, FORMAT_TIME)}
         <br />
-        {format(arrival, FORMAT_DAY)}
+        {format(arrival!, FORMAT_DAY)}
       </React.Fragment>
     );
   };

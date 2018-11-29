@@ -11,7 +11,6 @@ export namespace ITabs {
 }
 
 export type LanguageType = 'ru' | 'en';
-export type LanguageRequsetType = 'ru_RU' | 'en_EN';
 
 export type AirportCode = 's9600216' | 's9600215' | 's9600213';
 export type EventType = 'arrival' | 'departure';
@@ -24,17 +23,17 @@ export interface Action {
 }
 
 export interface ReduxState {
-  language: ILanguage.State;
+  dictionary: IDictionary.State;
   flights: IFlights.State;
 }
 
-export namespace ILanguage {
+export namespace IDictionary {
   export interface State {
     selectedLanguage: LanguageType;
-    dictionary: { [key: string]: string };
+    dictionary: { [key: string]: string } | null;
   }
 
-  export type AC_Select = (value: LanguageType) => Action;
+  export type AC_GetDictionary = (value: LanguageType) => Action;
 }
 
 export namespace IFlights {

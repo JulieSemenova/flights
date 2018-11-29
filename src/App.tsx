@@ -6,15 +6,17 @@ import { Input, Tabs, Select } from 'antd';
 import ArrivalsTab from './components/ArrivalsTab/ArrivalsTab';
 import DelaysTab from './components/DelaysTab/DelaysTab';
 import DeparturesTab from './components/DeparturesTab/DeparturesTab';
+import GetTranslation from './components/GetTranslation/GetTranslation';
+
 import {
   ReduxState,
   ITabs,
-  ILanguage,
+  IDictionary,
   LanguageType,
   AirportCode,
   ISOString
 } from './types';
-import { selectLanguage } from './redux/reducers/language';
+import { getDictionary } from './redux/reducers/dictionary';
 
 import './App.css';
 import { FORMAT_FULL_DAY } from './constants';
@@ -25,29 +27,37 @@ const Search = Input.Search;
 const Option = Select.Option;
 
 interface IProps {
-  language: ILanguage.State;
-  selectLanguage: ILanguage.AC_Select;
+  dictionary: IDictionary.State;
+  getDictionary: IDictionary.AC_GetDictionary;
 }
 interface IState {
-  language: LanguageType;
+  selectedLanguage: LanguageType;
   airportCode: AirportCode;
   date: ISOString;
 }
 class App extends React.Component<IProps, IState> {
   state: IState = {
-    language: 'ru',
+    selectedLanguage: 'ru',
     airportCode: 's9600216',
     date: format(new Date(), FORMAT_FULL_DAY)
   };
 
+  componentDidMount() {
+    this.props.getDictionary('ru');
+  }
+
+  componentDidUpdate(prevProps: IProps, prevState: IState) {
+    if (prevState.selectedLanguage !== this.state.selectedLanguage) {
+      this.props.getDictionary(this.state.selectedLanguage);
+    }
+  }
+
   renderLanguageSelect = () => (
     <Select
-      defaultValue={this.props.language.selectedLanguage}
+      defaultValue={this.props.dictionary.selectedLanguage}
       style={{ marginBottom: '20px' }}
       onChange={(value: LanguageType) =>
-        this.setState({ ...this.state, language: value }, () =>
-          this.props.selectLanguage(value)
-        )
+        this.setState({ ...this.state, selectedLanguage: value })
       }
     >
       <Option value="ru">RU</Option>
@@ -63,9 +73,15 @@ class App extends React.Component<IProps, IState> {
         this.setState({ ...this.state, airportCode: value })
       }
     >
-      <Option value="s9600216">Домодедово</Option>
-      <Option value="s9600215">Внуково</Option>
-      <Option value="s9600213">Шереметьево</Option>
+      <Option value="s9600216">
+        <GetTranslation word="domodedovo" />
+      </Option>
+      <Option value="s9600215">
+        <GetTranslation word="vnukovo" />
+      </Option>
+      <Option value="s9600213">
+        <GetTranslation word="sheremetyevo" />
+      </Option>
     </Select>
   );
 
@@ -80,29 +96,26 @@ class App extends React.Component<IProps, IState> {
         style={{ marginBottom: '20px' }}
         onChange={(value: ISOString) => this.setState({ ...this.state, date: value })}
       >
-        <Option value={yesterday}>Вчера</Option>
-        <Option value={today}>Сегодня</Option>
-        <Option value={tomorrow}>Завтра</Option>
+        <Option value={yesterday}>
+          <GetTranslation word="yesterday" />
+        </Option>
+        <Option value={today}>
+          <GetTranslation word="today" />
+        </Option>
+        <Option value={tomorrow}>
+          <GetTranslation word="tomorrow" />
+        </Option>
       </Select>
     );
   };
 
   renderPane = (tab: ITabs.Config) => {
     const Component: React.ComponentClass<ITabs.TabProps> = tab.component;
-    const { language, airportCode, date } = this.state;
+    const { selectedLanguage, airportCode, date } = this.state;
     return (
-      <TabPane tab={this.getPaneName(tab.name)} key={tab.name}>
-        <Component language={language} airportCode={airportCode} date={date} />
+      <TabPane tab={<GetTranslation word={tab.name} />} key={tab.name}>
+        <Component language={selectedLanguage} airportCode={airportCode} date={date} />
       </TabPane>
-    );
-  };
-
-  getPaneName = (name: string) => {
-    const { dictionary } = this.props.language;
-    return (
-      <span style={{ textTransform: 'capitalize' }}>
-        {dictionary[name] ? dictionary[name] : name}
-      </span>
     );
   };
 
@@ -136,7 +149,7 @@ class App extends React.Component<IProps, IState> {
 
 export default connect(
   (state: ReduxState) => ({
-    language: state.language
+    dictionary: state.dictionary
   }),
-  { selectLanguage }
+  { getDictionary }
 )(App);

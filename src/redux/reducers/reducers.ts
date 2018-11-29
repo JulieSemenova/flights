@@ -1,12 +1,12 @@
 import { combineReducers } from 'redux';
 
-import language from './language';
+import dictionary from './dictionary';
 import flights from './flights';
 
 import { ReduxState } from '../../types';
 
 const appReducer = combineReducers<ReduxState>({
-  language,
+  dictionary,
   flights
 });
 
