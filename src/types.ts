@@ -5,6 +5,8 @@ export interface ITabConfig {
 
 export type LanguageType = 'ru' | 'en';
 export type AirportCode = 's9600216' | 's9600215' | 's9600213';
+export type EventType = 'arrival' | 'departure';
+export type ISOString = string;
 export interface Action {
   type?: string;
   types?: Array<string>;
@@ -32,9 +34,29 @@ export namespace IAirport {
     selectedAirport: AirportCode;
     isFetching: boolean;
     isFetched: boolean;
-    arrivals: Array<any>;
+    arrivals: Array<Flight>;
     error: Error | null;
   }
 
-  export type AC_Select = (value: AirportCode) => Action;
+  export type Flight = {
+    arrival: ISOString | null;
+    departure: ISOString | null;
+    is_fuzzy: boolean;
+    thread: {
+      title: string; // маршрут
+      uid: string;
+      number: string; // номер рейса
+      vehicle: string; // модель самолета
+      carrier: string; // название перевозчика
+    };
+  };
+
+  export type AC_Select = (airport: AirportCode) => Action;
+  export type AC_Fetching = () => Action;
+  export type AC_Fetch = (
+    airport: AirportCode,
+    lang: LanguageType,
+    event: EventType,
+    date?: ISOString
+  ) => Action;
 }
