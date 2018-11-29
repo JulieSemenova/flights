@@ -1,6 +1,13 @@
-export interface ITabConfig {
-  name: string;
-  component: React.ComponentClass;
+export namespace ITabs {
+  export interface Config {
+    name: string;
+    component: React.ComponentClass<TabProps | any>;
+  }
+  export type TabProps = {
+    language: LanguageType;
+    airportCode: AirportCode;
+    date: ISOString;
+  };
 }
 
 export type LanguageType = 'ru' | 'en';
@@ -9,7 +16,6 @@ export type EventType = 'arrival' | 'departure';
 export type ISOString = string;
 export interface Action {
   type?: string;
-  types?: Array<string>;
   data?: any;
   error?: any | null;
   [key: string]: any;
@@ -17,7 +23,7 @@ export interface Action {
 
 export interface ReduxState {
   language: ILanguage.State;
-  airport: IAirport.State;
+  flights: IFlights.State;
 }
 
 export namespace ILanguage {
@@ -29,12 +35,14 @@ export namespace ILanguage {
   export type AC_Select = (value: LanguageType) => Action;
 }
 
-export namespace IAirport {
+export namespace IFlights {
   export interface State {
     selectedAirport: AirportCode;
     isFetching: boolean;
     isFetched: boolean;
     arrivals: Array<Flight>;
+    departures: Array<Flight>;
+    delays: Array<Flight>;
     error: Error | null;
   }
 
