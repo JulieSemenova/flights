@@ -19,22 +19,44 @@ interface IProps extends OwnProps {
   isFetching: IFlights.State['isFetching'];
   fetchFlights: IFlights.AC_Fetch;
 }
-interface IState {}
+interface IState {
+  currentPage: number;
+  pageSize: number;
+}
 
 class ArrivalsTab extends React.Component<IProps, IState> {
+  state: IState = {
+    currentPage: 1,
+    pageSize: 20
+  };
+
   componentDidMount() {
     const { airportCode, language, date } = this.props;
+    const { pageSize, currentPage } = this.state;
+    const offset = currentPage === 1 && (currentPage - 1) * pageSize;
     // this.props.fetchFlights(
-    //   this.props.airportCode,
-    //   this.props.language,
+    //   airportCode,
+    //   language,
     //   'arrival',
-    //   '2018-11-29'
+    // offset,
+    //   date
     // );
-    console.log(airportCode, language, 'arrival', date);
+    console.log(airportCode, language, 'arrival', date, offset);
   }
 
-  shouldComponentUpdate(nextProps: IProps) {
-    return this.props !== nextProps;
+  componentDidUpdate(prevProps: IProps) {
+    const { airportCode, language, date } = this.props;
+
+    if (this.props !== prevProps) {
+      // this.props.fetchFlights(
+      //   airportCode,
+      //   language,
+      //   'arrival',
+      // offset,
+      //   date
+      // );
+      console.log(airportCode, language, 'arrival', date);
+    }
   }
 
   getColumns = () => {
@@ -55,11 +77,6 @@ class ArrivalsTab extends React.Component<IProps, IState> {
         title: 'Перевозчик',
         dataIndex: 'thread.carrier',
         key: 'thread.carrier'
-      },
-      {
-        title: 'Самолет',
-        dataIndex: 'thread.vehicle',
-        key: 'thread.vehicle'
       }
     ];
     return flightColumns;
@@ -85,16 +102,23 @@ class ArrivalsTab extends React.Component<IProps, IState> {
     );
   };
 
+  handleChangePage = (page: number, pageSize: number) => {
+    this.setState({ pageSize, currentPage: page });
+  };
+
   render() {
     const { arrivals, isFetching } = this.props;
-
     return (
       <div className="arrivals">
         <Table
-          dataSource={arrivals}
+          dataSource={arrivals.flights}
           columns={this.getColumns()}
           rowKey="uid"
           loading={isFetching}
+          pagination={{
+            total: arrivals.total,
+            onChange: this.handleChangePage
+          }}
         />
       </div>
     );

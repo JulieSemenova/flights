@@ -11,12 +11,10 @@ import {
   ITabs,
   ILanguage,
   LanguageType,
-  IFlights,
   AirportCode,
   ISOString
 } from './types';
 import { selectLanguage } from './redux/reducers/language';
-import { selectAirport } from './redux/reducers/flights';
 
 import './App.css';
 import { FORMAT_FULL_DAY } from './constants';
@@ -29,8 +27,6 @@ const Option = Select.Option;
 interface IProps {
   language: ILanguage.State;
   selectLanguage: ILanguage.AC_Select;
-  airport: IFlights.State['selectedAirport'];
-  selectAirport: IFlights.AC_Select;
 }
 interface IState {
   language: LanguageType;
@@ -61,12 +57,10 @@ class App extends React.Component<IProps, IState> {
 
   renderAirportSelect = () => (
     <Select
-      defaultValue={this.props.airport}
+      defaultValue={this.state.airportCode}
       style={{ marginBottom: '20px' }}
       onChange={(value: AirportCode) =>
-        this.setState({ ...this.state, airportCode: value }, () =>
-          this.props.selectAirport(value)
-        )
+        this.setState({ ...this.state, airportCode: value })
       }
     >
       <Option value="s9600216">Домодедово</Option>
@@ -142,8 +136,7 @@ class App extends React.Component<IProps, IState> {
 
 export default connect(
   (state: ReduxState) => ({
-    language: state.language,
-    airport: state.flights.selectedAirport
+    language: state.language
   }),
-  { selectLanguage, selectAirport }
+  { selectLanguage }
 )(App);
