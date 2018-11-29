@@ -1,15 +1,15 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
+import { createStore, applyMiddleware } from 'redux';
+import thunk from 'redux-thunk';
 
 import App from './App';
 import reducers from './redux/reducers/reducers';
 import './index.css';
-import registerServiceWorker from './registerServiceWorker';
 
 const mountPoint = document.getElementById('root') as HTMLElement;
-const store = createStore(reducers);
+const store = createStore(reducers, applyMiddleware(thunk));
 
 ReactDOM.render(
   <Provider store={store}>
@@ -17,4 +17,3 @@ ReactDOM.render(
   </Provider>,
   mountPoint
 );
-registerServiceWorker();

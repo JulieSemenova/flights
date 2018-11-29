@@ -1,6 +1,8 @@
+import axios from 'axios';
+import { Dispatch } from 'redux';
+
 import { Action, IAirport, AirportCode } from '../../types';
 import { API_KEY } from '../../constants';
-import axios from 'axios';
 
 export const SELECT_AIRPORT: string = 'airport/SELECT_AIRPORT';
 export const FETCH_ARRIVALS: string = 'airport/FETCH_ARRIVALS';
@@ -32,7 +34,6 @@ export default function reducer(
         isFetching: true
       };
     case FETCH_ARRIVALS_SUCCESS:
-      console.log(action.data);
       return {
         ...state,
         isFetching: false,
@@ -59,21 +60,19 @@ export const selectAirport: IAirport.AC_Select = (data: AirportCode): Action => 
 };
 
 export const fetchArrivals: any = (data: AirportCode): Action => {
-  axios
-    .get(
-      `/schedule/?apikey=${API_KEY}&station=${data}&transport_types=plane&event=departure&date=2018-11-28`
-    )
-    .then(response => fetchArrivalsSuccess(response))
-    .catch(error => console.log(error));
-  return {
-    type: FETCH_ARRIVALS
+  return function(dispatch: Dispatch) {
+    axios
+      .get(
+        `/schedule/?apikey=${API_KEY}&station=${data}&transport_types=plane&event=departure&date=2018-11-28`
+      )
+      .then(response => dispatch(fetchArrivalsSuccess(response)))
+      .catch(error => dispatch(fetchArrivalsError(error)));
   };
 };
 
 export const fetchArrivalsSuccess: any = (data: any): Action => {
-  console.log('sdfj');
   return {
-    data,
+    data: data.data.schedule,
     type: FETCH_ARRIVALS_SUCCESS
   };
 };
