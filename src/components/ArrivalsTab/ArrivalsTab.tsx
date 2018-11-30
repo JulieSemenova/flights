@@ -102,7 +102,7 @@ class ArrivalsTab extends React.Component<IProps, IState> {
     this.setState({ pageSize, currentPage: page });
   };
 
-  renderFlight = () => {
+  renderSearchFlights = () => {
     const { arrivals, searchString } = this.props;
     const flight = arrivals.flights.filter((flight: IFlights.Flight) =>
       flight.thread.number.match(searchString)
@@ -116,7 +116,7 @@ class ArrivalsTab extends React.Component<IProps, IState> {
       <div className="arrivals">
         {error && <Alert type="error" message={ERROR_MAP[language]} />}
         <Table
-          dataSource={!searchString ? arrivals.flights : this.renderFlight()}
+          dataSource={!searchString ? arrivals.flights : this.renderSearchFlights()}
           columns={this.getColumns()}
           rowKey={(record: IFlights.Flight) => record.thread.uid}
           loading={isFetching}
