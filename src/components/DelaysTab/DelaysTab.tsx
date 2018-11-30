@@ -13,6 +13,7 @@ interface OwnProps {
   language: LanguageType;
   airportCode: AirportCode;
   date: ISOString;
+  searchString: string;
 }
 interface IProps extends OwnProps {
   delays: IFlights.State['delays'];
@@ -112,15 +113,23 @@ class DelaysTab extends React.Component<IProps, IState> {
     this.setState({ pageSize, currentPage: page });
   };
 
+  renderSearchFlights = () => {
+    const { delays, searchString } = this.props;
+    const flight = delays.flights.filter((flight: IFlights.Flight) =>
+      flight.thread.number.match(searchString)
+    );
+    return flight;
+  };
+
   render() {
-    const { delays, isFetching, error, language } = this.props;
+    const { delays, isFetching, error, language, searchString } = this.props;
     return (
       <div className="delays">
         {error && <Alert type="error" message={ERROR_MAP[language]} />}
         <Table
-          dataSource={delays.flights}
+          dataSource={!searchString ? delays.flights : this.renderSearchFlights()}
           columns={this.getColumns()}
-          rowKey="uid"
+          rowKey={(record: IFlights.Flight) => record.thread.uid}
           loading={isFetching}
           pagination={{
             total: delays.total,
