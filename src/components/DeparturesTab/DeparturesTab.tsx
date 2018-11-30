@@ -104,8 +104,9 @@ class DeparturesTab extends React.Component<IProps, IState> {
 
   renderSearchFlights = () => {
     const { departures, searchString } = this.props;
+    const searchRegExp = new RegExp(searchString, 'i');
     const flight = departures.flights.filter((flight: IFlights.Flight) =>
-      flight.thread.number.match(searchString)
+      flight.thread.number.match(searchRegExp)
     );
     return flight;
   };

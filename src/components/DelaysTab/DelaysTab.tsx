@@ -115,8 +115,9 @@ class DelaysTab extends React.Component<IProps, IState> {
 
   renderSearchFlights = () => {
     const { delays, searchString } = this.props;
+    const searchRegExp = new RegExp(searchString, 'i');
     const flight = delays.flights.filter((flight: IFlights.Flight) =>
-      flight.thread.number.match(searchString)
+      flight.thread.number.match(searchRegExp)
     );
     return flight;
   };
