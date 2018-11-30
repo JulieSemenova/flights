@@ -36,7 +36,7 @@ interface IState {
   date: ISOString;
   searchString: string;
 }
-class App extends React.Component<IProps, IState> {
+export class Main extends React.Component<IProps, IState> {
   state: IState = {
     selectedLanguage: 'ru',
     airportCode: 's9600216',
@@ -161,4 +161,4 @@ export default connect(
     dictionary: state.dictionary
   }),
   { getDictionary }
-)(App);
+)(Main);
