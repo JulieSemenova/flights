@@ -1,9 +1,17 @@
 import * as React from 'react';
-import * as ReactDOM from 'react-dom';
-import Main from './Main';
+import { Main } from './Main';
+import { mount } from 'enzyme';
 
-it('renders without crashing', () => {
-  const div = document.createElement('div');
-  ReactDOM.render(<Main />, div);
-  ReactDOM.unmountComponentAtNode(div);
+describe('<Main />', () => {
+  it('renders and matches snappy', () => {
+    const props = {
+      dictionary: {
+        selectedLanguage: 'ru' as 'ru',
+        dictionary: null
+      },
+      getDictionary: (value: 'ru') => jest.fn().mockImplementation()
+    };
+    const wrapper = mount(<Main {...props} />);
+    expect(wrapper.find('.main')).toMatchSnapshot();
+  });
 });

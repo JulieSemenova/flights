@@ -6,7 +6,7 @@ import { ColumnProps } from 'antd/lib/table';
 
 import { ReduxState, IFlights, ISOString, LanguageType, AirportCode } from '../../types';
 import { fetchDelayedFlights } from '../../redux/reducers/flights';
-import { FORMAT_DAY, FORMAT_TIME, PAGE_SIZE, ERROR_MAP } from 'src/constants';
+import { FORMAT_DAY, FORMAT_TIME, PAGE_SIZE, ERROR_MAP } from '../../constants';
 import GetTranslation from '../GetTranslation/GetTranslation';
 
 interface OwnProps {
