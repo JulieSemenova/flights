@@ -3,10 +3,10 @@ import * as format from 'date-fns/format';
 import { connect } from 'react-redux';
 import { Input, Tabs, Select } from 'antd';
 
-import ArrivalsTab from './components/ArrivalsTab/ArrivalsTab';
-import DelaysTab from './components/DelaysTab/DelaysTab';
-import DeparturesTab from './components/DeparturesTab/DeparturesTab';
-import GetTranslation from './components/GetTranslation/GetTranslation';
+import ArrivalsTab from '../ArrivalsTab/ArrivalsTab';
+import DelaysTab from '../DelaysTab/DelaysTab';
+import DeparturesTab from '../DeparturesTab/DeparturesTab';
+import GetTranslation from '../GetTranslation/GetTranslation';
 
 import {
   ReduxState,
@@ -15,12 +15,12 @@ import {
   LanguageType,
   AirportCode,
   ISOString
-} from './types';
-import { getDictionary } from './redux/reducers/dictionary';
+} from '../../types';
+import { getDictionary } from '../../redux/reducers/dictionary';
 
-import './App.css';
-import { FORMAT_FULL_DAY } from './constants';
-import getISODate from './helpers/getISODate';
+import './Main.css';
+import { FORMAT_FULL_DAY } from '../../constants';
+import getISODate from '../../helpers/getISODate';
 
 const TabPane = Tabs.TabPane;
 const Search = Input.Search;
