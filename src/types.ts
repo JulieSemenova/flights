@@ -63,15 +63,13 @@ export namespace IFlights {
     };
   };
 
-  export type Params = {
-    airport: AirportCode;
-    lang: LanguageType;
-    offset: number;
-    event?: EventType;
-    date?: ISOString;
-  };
-
   export type AC_Select = (airport: AirportCode) => Action;
   export type AC_Fetching = () => Action;
-  export type AC_Fetch = (params: Params) => Action;
+  export type AC_Fetch = (
+    airport: AirportCode,
+    lang: LanguageType,
+    event: EventType,
+    offset: number,
+    date?: ISOString
+  ) => Action;
 }
