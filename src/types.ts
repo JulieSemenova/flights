@@ -72,4 +72,10 @@ export namespace IFlights {
     offset: number,
     date?: ISOString
   ) => Action;
+  export type AC_FetchDelay = (
+    airport: AirportCode,
+    lang: LanguageType,
+    offset: number,
+    date?: ISOString
+  ) => Action;
 }

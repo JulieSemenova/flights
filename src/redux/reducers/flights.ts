@@ -14,6 +14,7 @@ import { API_KEY, LANG_MAP, PAGE_SIZE } from '../../constants';
 export const SELECT_AIRPORT: string = 'airport/SELECT_AIRPORT';
 export const FETCH_FLIGHTS: string = 'airport/FETCH_FLIGHTS';
 export const FETCH_FLIGHTS_SUCCESS: string = 'airport/FETCH_FLIGHTS_SUCCESS';
+export const FETCH_DELAYS_SUCCESS: string = 'airport/FETCH_DELAYS_SUCCESS';
 export const FETCH_FLIGHTS_FAIL: string = 'airport/FETCH_FLIGHTS_FAIL';
 
 export const initialState: IFlights.State = {
@@ -51,6 +52,13 @@ export default function reducer(
         isFetching: false,
         isFetched: true,
         [flightEvent]: action.data
+      };
+    case FETCH_DELAYS_SUCCESS:
+      return {
+        ...state,
+        isFetching: false,
+        isFetched: true,
+        delays: action.data
       };
     case FETCH_FLIGHTS_FAIL:
       return {
@@ -92,6 +100,27 @@ export const fetchFlights: IFlights.AC_Fetch = (
   };
 };
 
+export const fetchDelayedFlights: IFlights.AC_FetchDelay = (
+  airport: AirportCode,
+  lang: LanguageType,
+  offset: number,
+  date?: ISOString
+): any => {
+  const selectedDate = date ? date : new Date().toISOString();
+  return function(dispatch: Dispatch) {
+    dispatch(fetchingFlights());
+    axios
+      .get(
+        `/schedule/?apikey=${API_KEY}&station=${airport}&transport_types=plane&date=${selectedDate}&offset=${offset}&limit=500&lang=${
+          // TODO: limit
+          LANG_MAP[lang]
+        }`
+      )
+      .then(response => dispatch(fetchDelaysSuccess(response)))
+      .catch(error => dispatch(fetchFlightsError(error)));
+  };
+};
+
 export const fetchFlightsSuccess: any = (data: any, event: EventType): Action => {
   return {
     event,
@@ -112,6 +141,32 @@ export const fetchFlightsSuccess: any = (data: any, event: EventType): Action =>
       })
     },
     type: FETCH_FLIGHTS_SUCCESS
+  };
+};
+
+export const fetchDelaysSuccess: any = (data: any, event: EventType): Action => {
+  const delayedFlights: Array<any> = data.data.schedule.filter(
+    (flight: any) => flight.is_fuzzy === true
+  );
+  return {
+    event,
+    data: {
+      total: delayedFlights.length,
+      flights: delayedFlights.map((flight: any) => {
+        return {
+          arrival: flight.arrival,
+          departure: flight.departure,
+          is_fuzzy: flight.is_fuzzy,
+          thread: {
+            title: flight.thread.title,
+            number: flight.thread.number,
+            uid: flight.thread.uid,
+            carrier: flight.thread.carrier.title
+          }
+        };
+      })
+    },
+    type: FETCH_DELAYS_SUCCESS
   };
 };
 
