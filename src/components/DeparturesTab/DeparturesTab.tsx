@@ -89,7 +89,7 @@ class DeparturesTab extends React.Component<IProps, IState> {
     const { departure, is_fuzzy } = flight;
     return (
       <React.Fragment>
-        {is_fuzzy && <Badge status="error" />}
+        {is_fuzzy && <Badge status="error" />} {/* задержка рейса */}
         {format(departure!, FORMAT_TIME)}
         <br />
         {format(departure!, FORMAT_DAY)}

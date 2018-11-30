@@ -34,12 +34,14 @@ interface IState {
   selectedLanguage: LanguageType;
   airportCode: AirportCode;
   date: ISOString;
+  searchString: string;
 }
 class App extends React.Component<IProps, IState> {
   state: IState = {
     selectedLanguage: 'ru',
     airportCode: 's9600216',
-    date: format(new Date(), FORMAT_FULL_DAY)
+    date: format(new Date(), FORMAT_FULL_DAY),
+    searchString: ''
   };
 
   componentDidMount() {
@@ -111,12 +113,16 @@ class App extends React.Component<IProps, IState> {
 
   renderPane = (tab: ITabs.Config) => {
     const Component: React.ComponentClass<ITabs.TabProps> = tab.component;
-    const { selectedLanguage, airportCode, date } = this.state;
+    const { selectedLanguage } = this.state;
     return (
       <TabPane tab={<GetTranslation word={tab.name} />} key={tab.name}>
-        <Component language={selectedLanguage} airportCode={airportCode} date={date} />
+        <Component language={selectedLanguage} {...this.state} />
       </TabPane>
     );
+  };
+
+  handleChange = (key: keyof IState) => (event: React.ChangeEvent<HTMLInputElement>) => {
+    this.setState({ ...this.state, [key]: event.target.value });
   };
 
   public render() {
@@ -136,13 +142,16 @@ class App extends React.Component<IProps, IState> {
     ];
 
     return (
-      <React.Fragment>
-        {this.renderLanguageSelect()}
+      <div className="main">
         {this.renderAirportSelect()}
         {this.renderDateSelect()}
-        <Search style={{ marginBottom: '10px' }} />
+        {this.renderLanguageSelect()}
+        <Search
+          onChange={this.handleChange('searchString')}
+          style={{ marginBottom: '10px' }}
+        />
         <Tabs>{tabs.map(this.renderPane)}</Tabs>
-      </React.Fragment>
+      </div>
     );
   }
 }

@@ -7,6 +7,7 @@ export namespace ITabs {
     language: LanguageType;
     airportCode: AirportCode;
     date: ISOString;
+    searchString: string;
   };
 }
 

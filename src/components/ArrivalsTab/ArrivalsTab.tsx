@@ -13,6 +13,7 @@ interface OwnProps {
   language: LanguageType;
   airportCode: AirportCode;
   date: ISOString;
+  searchString: string;
 }
 interface IProps extends OwnProps {
   arrivals: IFlights.State['arrivals'];
@@ -89,7 +90,7 @@ class ArrivalsTab extends React.Component<IProps, IState> {
     const { arrival, is_fuzzy } = flight;
     return (
       <React.Fragment>
-        {is_fuzzy && <Badge status="error" />}
+        {is_fuzzy && <Badge status="error" />} {/* задержка рейса */}
         {format(arrival!, FORMAT_TIME)}
         <br />
         {format(arrival!, FORMAT_DAY)}
@@ -101,15 +102,23 @@ class ArrivalsTab extends React.Component<IProps, IState> {
     this.setState({ pageSize, currentPage: page });
   };
 
+  renderFlight = () => {
+    const { arrivals, searchString } = this.props;
+    const flight = arrivals.flights.filter((flight: IFlights.Flight) =>
+      flight.thread.number.match(searchString)
+    );
+    return flight;
+  };
+
   render() {
-    const { arrivals, isFetching, error, language } = this.props;
+    const { arrivals, isFetching, error, language, searchString } = this.props;
     return (
       <div className="arrivals">
         {error && <Alert type="error" message={ERROR_MAP[language]} />}
         <Table
-          dataSource={arrivals.flights}
+          dataSource={!searchString ? arrivals.flights : this.renderFlight()}
           columns={this.getColumns()}
-          rowKey="uid"
+          rowKey={(record: IFlights.Flight) => record.thread.uid}
           loading={isFetching}
           pagination={{
             total: arrivals.total,
