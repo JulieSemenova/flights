@@ -1,8 +1,15 @@
 import axios from 'axios';
 import { Dispatch } from 'redux';
 
-import { Action, IFlights, AirportCode, EventType } from '../../types';
-import { API_KEY, LANG_MAP } from '../../constants';
+import {
+  Action,
+  IFlights,
+  AirportCode,
+  EventType,
+  LanguageType,
+  ISOString
+} from '../../types';
+import { API_KEY, LANG_MAP, PAGE_SIZE } from '../../constants';
 
 export const SELECT_AIRPORT: string = 'airport/SELECT_AIRPORT';
 export const FETCH_FLIGHTS: string = 'airport/FETCH_FLIGHTS';
@@ -38,11 +45,12 @@ export default function reducer(
         isFetching: true
       };
     case FETCH_FLIGHTS_SUCCESS:
+      const flightEvent = action.event === 'arrival' ? 'arrivals' : 'departures';
       return {
         ...state,
         isFetching: false,
         isFetched: true,
-        [action.event]: action.data
+        [flightEvent]: action.data
       };
     case FETCH_FLIGHTS_FAIL:
       return {
@@ -62,20 +70,20 @@ export const fetchingFlights: any = (): Action => {
   };
 };
 
-export const fetchFlights: IFlights.AC_Fetch = ({
-  airport,
-  lang,
-  offset,
-  event,
-  date
-}: IFlights.Params): any => {
+export const fetchFlights: IFlights.AC_Fetch = (
+  airport: AirportCode,
+  lang: LanguageType,
+  event: EventType,
+  offset: number,
+  date?: ISOString
+): any => {
   const selectedDate = date ? date : new Date().toISOString();
 
   return function(dispatch: Dispatch) {
     dispatch(fetchingFlights());
     axios
       .get(
-        `/schedule/?apikey=${API_KEY}&station=${airport}&transport_types=plane&event=${event}&date=${selectedDate}&offset=${offset}&lang=${
+        `/schedule/?apikey=${API_KEY}&station=${airport}&transport_types=plane&event=${event}&date=${selectedDate}&offset=${offset}&limit=${PAGE_SIZE}&lang=${
           LANG_MAP[lang]
         }`
       )
@@ -88,7 +96,7 @@ export const fetchFlightsSuccess: any = (data: any, event: EventType): Action =>
   return {
     event,
     data: {
-      total: data.pagination.total,
+      total: data.data.pagination.total,
       flights: data.data.schedule.map((flight: any) => {
         return {
           arrival: flight.arrival,

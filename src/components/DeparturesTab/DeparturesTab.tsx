@@ -1,12 +1,12 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import * as format from 'date-fns/format';
-import { Table, Badge } from 'antd';
+import { Table, Badge, Alert } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 
 import { ReduxState, IFlights, ISOString, LanguageType, AirportCode } from '../../types';
 import { fetchFlights } from '../../redux/reducers/flights';
-import { FORMAT_DAY, FORMAT_TIME } from 'src/constants';
+import { FORMAT_DAY, FORMAT_TIME, PAGE_SIZE, ERROR_MAP } from 'src/constants';
 import GetTranslation from '../GetTranslation/GetTranslation';
 
 interface OwnProps {
@@ -18,6 +18,7 @@ interface IProps extends OwnProps {
   departures: IFlights.State['departures'];
   isFetching: IFlights.State['isFetching'];
   fetchFlights: IFlights.AC_Fetch;
+  error: IFlights.State['error'];
 }
 interface IState {
   currentPage: number;
@@ -27,36 +28,27 @@ interface IState {
 class DeparturesTab extends React.Component<IProps, IState> {
   state: IState = {
     currentPage: 1,
-    pageSize: 20
+    pageSize: PAGE_SIZE
   };
 
   componentDidMount() {
     const { airportCode, language, date } = this.props;
     const { pageSize, currentPage } = this.state;
-    const offset = currentPage === 1 && (currentPage - 1) * pageSize;
-    // this.props.fetchFlights(
-    //   airportCode,
-    //   language,
-    //   'departure',
-    // offset,
-    //   date
-    // );
-    console.log(airportCode, language, 'departure', date, offset);
+    const offset = currentPage > 1 ? (currentPage - 1) * pageSize : 0;
+    this.props.fetchFlights(airportCode, language, 'departure', offset, date);
   }
 
   componentDidUpdate(prevProps: IProps, prevState: IState) {
     const { airportCode, language, date } = this.props;
     const { pageSize, currentPage } = this.state;
-    const offset = currentPage === 1 && (currentPage - 1) * pageSize;
-    if (this.props !== prevProps || this.state !== prevState) {
-      // this.props.fetchFlights(
-      //   airportCode,
-      //   language,
-      //   'departure',
-      // offset,
-      //   date
-      // );
-      console.log(airportCode, language, 'departure', date, offset);
+    const offset = currentPage > 1 ? (currentPage - 1) * pageSize : 0;
+    if (
+      this.state !== prevState ||
+      airportCode !== prevProps.airportCode ||
+      language !== prevProps.language ||
+      date !== prevProps.date
+    ) {
+      this.props.fetchFlights(airportCode, language, 'departure', offset, date);
     }
   }
 
@@ -110,9 +102,10 @@ class DeparturesTab extends React.Component<IProps, IState> {
   };
 
   render() {
-    const { departures, isFetching } = this.props;
+    const { departures, isFetching, error, language } = this.props;
     return (
       <div className="departures">
+        {error && <Alert type="error" message={ERROR_MAP[language]} />}
         <Table
           dataSource={departures.flights}
           columns={this.getColumns()}
@@ -120,7 +113,8 @@ class DeparturesTab extends React.Component<IProps, IState> {
           loading={isFetching}
           pagination={{
             total: departures.total,
-            onChange: this.handleChangePage
+            onChange: this.handleChangePage,
+            pageSize: PAGE_SIZE
           }}
         />
       </div>
@@ -131,7 +125,8 @@ class DeparturesTab extends React.Component<IProps, IState> {
 export default connect(
   (state: ReduxState) => ({
     departures: state.flights.departures,
-    isFetching: state.flights.isFetching
+    isFetching: state.flights.isFetching,
+    error: state.flights.error
   }),
   { fetchFlights }
 )(DeparturesTab);
