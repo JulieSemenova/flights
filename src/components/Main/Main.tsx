@@ -14,7 +14,8 @@ import {
   IDictionary,
   LanguageType,
   AirportCode,
-  ISOString
+  ISOString,
+  IFlights
 } from '../../types';
 import { getDictionary } from '../../redux/reducers/dictionary';
 
@@ -30,15 +31,17 @@ interface IProps {
   getDictionary: IDictionary.AC_GetDictionary;
 }
 interface IState {
-  selectedLanguage: LanguageType;
+  language: LanguageType;
   airportCode: AirportCode;
   date: ISOString;
+  searchFlights: Array<IFlights.Flight>;
 }
 export class Main extends React.Component<IProps, IState> {
   state: IState = {
-    selectedLanguage: 'ru',
+    language: 'ru',
     airportCode: 's9600216',
     date: format(new Date(), FORMAT_FULL_DAY),
+    searchFlights: []
   };
 
   componentDidMount() {
@@ -46,8 +49,8 @@ export class Main extends React.Component<IProps, IState> {
   }
 
   componentDidUpdate(prevProps: IProps, prevState: IState) {
-    if (prevState.selectedLanguage !== this.state.selectedLanguage) {
-      this.props.getDictionary(this.state.selectedLanguage);
+    if (prevState.language !== this.state.language) {
+      this.props.getDictionary(this.state.language);
     }
   }
 
@@ -56,7 +59,7 @@ export class Main extends React.Component<IProps, IState> {
       defaultValue={this.props.dictionary.selectedLanguage}
       style={{ marginBottom: '20px' }}
       onChange={(value: LanguageType) =>
-        this.setState({ ...this.state, selectedLanguage: value })
+        this.setState({ ...this.state, language: value })
       }
     >
       <Option value="ru">RU</Option>
@@ -110,10 +113,9 @@ export class Main extends React.Component<IProps, IState> {
 
   renderPane = (tab: ITabs.Config) => {
     const Component: React.ComponentClass<ITabs.TabProps> = tab.component;
-    const { selectedLanguage } = this.state;
     return (
       <TabPane tab={<GetTranslation word={tab.name} />} key={tab.name}>
-        <Component language={selectedLanguage} {...this.state} />
+      <Component {...this.state} />}
       </TabPane>
     );
   };
@@ -121,6 +123,10 @@ export class Main extends React.Component<IProps, IState> {
   handleChange = (key: keyof IState) => (event: React.ChangeEvent<HTMLInputElement>) => {
     this.setState({ ...this.state, [key]: event.target.value });
   };
+
+  getFlights = (flights: Array<IFlights.Flight>) => {
+    this.setState({ searchFlights: flights });
+  }
 
   public render() {
     const tabs: Array<ITabs.Config> = [
@@ -140,11 +146,13 @@ export class Main extends React.Component<IProps, IState> {
 
     return (
       <div className="main">
+
         {this.renderAirportSelect()}
         {this.renderDateSelect()}
         {this.renderLanguageSelect()}
-        <Search language={this.state.selectedLanguage} {...this.state} />
+        <Search {...this.state} getFlights={this.getFlights} />
         <Tabs>{tabs.map(this.renderPane)}</Tabs>
+
       </div>
     );
   }

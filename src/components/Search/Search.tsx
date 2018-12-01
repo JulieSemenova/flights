@@ -18,6 +18,7 @@ interface OwnProps {
   language: LanguageType;
   airportCode: AirportCode;
   date: ISOString;
+  getFlights: (flights: Array<IFlights.Flight>) => void;
 }
 
 interface IProps extends OwnProps {
@@ -27,11 +28,11 @@ interface IProps extends OwnProps {
 
 interface IState {
   searchString: string;
-
 }
+
 class SearchComponent extends React.Component<IProps, IState> {
   state: IState = {
-    searchString: ''
+    searchString: '',
   };
 
   componentDidMount() {
@@ -39,7 +40,7 @@ class SearchComponent extends React.Component<IProps, IState> {
     this.props.fetchAllFlights(airportCode, language, START_LIMIT, 0, date);
   }
 
-  componentDidUpdate(prevProps: IProps ) {
+  componentDidUpdate(prevProps: IProps) {
     const { airportCode, language, date } = this.props;
     if (
       airportCode !== prevProps.airportCode ||
@@ -55,24 +56,25 @@ class SearchComponent extends React.Component<IProps, IState> {
   };
 
   renderSearchFlights = () => {
-    const { allFlights } = this.props;
+    const { allFlights, getFlights } = this.props;
     const { searchString } = this.state;
     const searchRegExp = new RegExp(searchString, 'i');
     const flights = allFlights.flights.filter((flight: IFlights.Flight) =>
       flight.thread.number.match(searchRegExp)
     );
-    console.log( flights);
+    getFlights(flights);
   };
 
   render() {
-
     return (
       <div className="search">
         <Search
           onChange={this.handleChange('searchString')}
           style={{ marginBottom: '10px' }}
+          value={this.state.searchString}
         />
       </div>
+
     );
   }
 }

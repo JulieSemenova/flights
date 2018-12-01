@@ -151,7 +151,6 @@ export const fetchAllFlightsSuccess: any = (data: any): Action => {
   };
 };
 
-
 export const fetchFlightsSuccess: any = (data: any, event: EventType): Action => {
   return {
     event,
@@ -174,7 +173,6 @@ export const fetchFlightsSuccess: any = (data: any, event: EventType): Action =>
     type: FETCH_FLIGHTS_SUCCESS
   };
 };
-
 
 export const fetchFlightsError: any = (error: AirportCode): Action => {
   return {

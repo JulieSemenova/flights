@@ -4,16 +4,11 @@ import * as format from 'date-fns/format';
 import { Table, Alert } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 
-import { ReduxState, IFlights, ISOString, LanguageType, AirportCode } from '../../types';
+import { ReduxState, IFlights, ITabs } from '../../types';
 import { FORMAT_DAY, FORMAT_TIME, PAGE_SIZE, ERROR_MAP } from '../../constants';
 import GetTranslation from '../GetTranslation/GetTranslation';
 
-interface OwnProps {
-  language: LanguageType;
-  airportCode: AirportCode;
-  date: ISOString;
-  searchString: string;
-}
+interface OwnProps extends ITabs.TabProps{}
 
 interface IProps extends OwnProps {
   allFlights: IFlights.State['allFlights'];
@@ -85,17 +80,17 @@ class DelaysTab extends React.Component<IProps> {
   }
 
   render() {
-    const { isFetching, error, language } = this.props;
+    const { isFetching, error, language, searchFlights } = this.props;
     return (
       <div className="delays">
         {error && <Alert type="error" message={ERROR_MAP[language]} />}
         <Table
-          dataSource={this.getData()}
+          dataSource={searchFlights ? searchFlights : this.getData()}
           columns={this.getColumns()}
-          rowKey={(record: IFlights.Flight) => record.thread.uid}
+          rowKey={(record: IFlights.Flight, dataIndex: number) => `${record.thread.uid}+${dataIndex}`}
           loading={isFetching}
           pagination={{
-            total: this.getData().length,
+            total: searchFlights ? searchFlights.length : this.getData().length,
             pageSize: PAGE_SIZE
           }}
         />
