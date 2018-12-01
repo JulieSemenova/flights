@@ -5,7 +5,6 @@ import { Table, Alert } from 'antd';
 import { ColumnProps } from 'antd/lib/table';
 
 import { ReduxState, IFlights, ISOString, LanguageType, AirportCode } from '../../types';
-import { fetchDelayedFlights } from '../../redux/reducers/flights';
 import { FORMAT_DAY, FORMAT_TIME, PAGE_SIZE, ERROR_MAP } from '../../constants';
 import GetTranslation from '../GetTranslation/GetTranslation';
 
@@ -15,44 +14,14 @@ interface OwnProps {
   date: ISOString;
   searchString: string;
 }
+
 interface IProps extends OwnProps {
-  delays: IFlights.State['delays'];
+  allFlights: IFlights.State['allFlights'];
   isFetching: IFlights.State['isFetching'];
-  fetchDelayedFlights: IFlights.AC_FetchDelay;
   error: IFlights.State['error'];
 }
-interface IState {
-  currentPage: number;
-  pageSize: number;
-}
 
-class DelaysTab extends React.Component<IProps, IState> {
-  state: IState = {
-    currentPage: 1,
-    pageSize: PAGE_SIZE
-  };
-
-  componentDidMount() {
-    const { airportCode, language, date } = this.props;
-    const { pageSize, currentPage } = this.state;
-    const offset = currentPage > 1 ? (currentPage - 1) * pageSize : 0;
-    this.props.fetchDelayedFlights(airportCode, language, offset, date);
-  }
-
-  componentDidUpdate(prevProps: IProps, prevState: IState) {
-    const { airportCode, language, date } = this.props;
-    const { pageSize, currentPage } = this.state;
-    const offset = currentPage > 1 ? (currentPage - 1) * pageSize : 0;
-    if (
-      this.state !== prevState ||
-      airportCode !== prevProps.airportCode ||
-      language !== prevProps.language ||
-      date !== prevProps.date
-    ) {
-      this.props.fetchDelayedFlights(airportCode, language, offset, date);
-    }
-  }
-
+class DelaysTab extends React.Component<IProps> {
   getColumns = () => {
     const flightColumns: Array<ColumnProps<IFlights.Flight>> = [
       {
@@ -109,32 +78,24 @@ class DelaysTab extends React.Component<IProps, IState> {
     return null;
   };
 
-  handleChangePage = (page: number, pageSize: number) => {
-    this.setState({ pageSize, currentPage: page });
-  };
-
-  renderSearchFlights = () => {
-    const { delays, searchString } = this.props;
-    const searchRegExp = new RegExp(searchString, 'i');
-    const flight = delays.flights.filter((flight: IFlights.Flight) =>
-      flight.thread.number.match(searchRegExp)
-    );
-    return flight;
-  };
+  getData = () => {
+    const { allFlights } = this.props;
+    const fuzzyFlight = allFlights.flights.filter((flight: IFlights.Flight) => flight.is_fuzzy);
+    return fuzzyFlight;
+  }
 
   render() {
-    const { delays, isFetching, error, language, searchString } = this.props;
+    const { isFetching, error, language } = this.props;
     return (
       <div className="delays">
         {error && <Alert type="error" message={ERROR_MAP[language]} />}
         <Table
-          dataSource={!searchString ? delays.flights : this.renderSearchFlights()}
+          dataSource={this.getData()}
           columns={this.getColumns()}
           rowKey={(record: IFlights.Flight) => record.thread.uid}
           loading={isFetching}
           pagination={{
-            total: delays.total,
-            onChange: this.handleChangePage,
+            total: this.getData().length,
             pageSize: PAGE_SIZE
           }}
         />
@@ -145,9 +106,8 @@ class DelaysTab extends React.Component<IProps, IState> {
 
 export default connect(
   (state: ReduxState) => ({
-    delays: state.flights.delays,
-    isFetching: state.flights.isFetching,
-    error: state.flights.error
-  }),
-  { fetchDelayedFlights }
+    allFlights: state.flights.allFlights,
+    error: state.flights.error,
+    isFetching: state.flights.isFetching
+  })
 )(DelaysTab);
