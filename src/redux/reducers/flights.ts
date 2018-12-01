@@ -59,8 +59,8 @@ export default function reducer(
         ...state,
         isFetching: false,
         isFetched: true,
-        allFlights: { 
-          total: action.data.total, 
+        allFlights: {
+          total: action.data.total,
           flights: allFlights
         }
       };
@@ -113,7 +113,6 @@ export const fetchAllFlights: IFlights.AC_FetchAll = (
 ): any => {
   const selectedDate = date ? date : new Date().toISOString();
   return function (dispatch: Dispatch) {
-    dispatch(fetchingFlights());
     axios
       .get(
         `/schedule/?apikey=${API_KEY}&station=${airport}&transport_types=plane&date=${selectedDate}&offset=${offset}&limit=${limit}&lang=${
@@ -121,7 +120,7 @@ export const fetchAllFlights: IFlights.AC_FetchAll = (
         }`
       )
       .then(response => dispatch(fetchAllFlightsSuccess(response)))
-      .then(response => {
+      .then((response) => {
         if (response.data.total > offset + limit) {
           dispatch(fetchAllFlights(airport, lang, response.data.total - limit, limit, date));
         }

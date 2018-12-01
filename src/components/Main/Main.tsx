@@ -1,13 +1,13 @@
 import * as React from 'react';
 import * as format from 'date-fns/format';
 import { connect } from 'react-redux';
-import { Input, Tabs, Select } from 'antd';
+import { Tabs, Select } from 'antd';
 
 import ArrivalsTab from '../ArrivalsTab/ArrivalsTab';
 import DelaysTab from '../DelaysTab/DelaysTab';
 import DeparturesTab from '../DeparturesTab/DeparturesTab';
 import GetTranslation from '../GetTranslation/GetTranslation';
-
+import Search from '../Search/Search';
 import {
   ReduxState,
   ITabs,
@@ -23,7 +23,6 @@ import { FORMAT_FULL_DAY } from '../../constants';
 import getISODate from '../../helpers/getISODate';
 
 const TabPane = Tabs.TabPane;
-const Search = Input.Search;
 const Option = Select.Option;
 
 interface IProps {
@@ -34,14 +33,12 @@ interface IState {
   selectedLanguage: LanguageType;
   airportCode: AirportCode;
   date: ISOString;
-  searchString: string;
 }
 export class Main extends React.Component<IProps, IState> {
   state: IState = {
     selectedLanguage: 'ru',
     airportCode: 's9600216',
     date: format(new Date(), FORMAT_FULL_DAY),
-    searchString: ''
   };
 
   componentDidMount() {
@@ -146,10 +143,7 @@ export class Main extends React.Component<IProps, IState> {
         {this.renderAirportSelect()}
         {this.renderDateSelect()}
         {this.renderLanguageSelect()}
-        <Search
-          onChange={this.handleChange('searchString')}
-          style={{ marginBottom: '10px' }}
-        />
+        <Search language={this.state.selectedLanguage} {...this.state} />
         <Tabs>{tabs.map(this.renderPane)}</Tabs>
       </div>
     );

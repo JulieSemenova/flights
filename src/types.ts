@@ -1,4 +1,4 @@
-import { AnyAction } from "redux";
+import { AnyAction } from 'redux';
 
 export namespace ITabs {
   export interface Config {
@@ -9,7 +9,6 @@ export namespace ITabs {
     language: LanguageType;
     airportCode: AirportCode;
     date: ISOString;
-    searchString: string;
   };
 }
 
