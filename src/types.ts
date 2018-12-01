@@ -1,3 +1,5 @@
+import { AnyAction } from "redux";
+
 export namespace ITabs {
   export interface Config {
     name: string;
@@ -41,9 +43,9 @@ export namespace IFlights {
   export interface State {
     isFetching: boolean;
     isFetched: boolean;
+    allFlights: Flights;
     arrivals: Flights;
     departures: Flights;
-    delays: Flights;
     error: Error | null;
   }
 
@@ -73,10 +75,11 @@ export namespace IFlights {
     offset: number,
     date?: ISOString
   ) => Action;
-  export type AC_FetchDelay = (
+  export type AC_FetchAll = (
     airport: AirportCode,
     lang: LanguageType,
+    limit: number,
     offset: number,
     date?: ISOString
-  ) => Action;
+  ) => AnyAction;
 }

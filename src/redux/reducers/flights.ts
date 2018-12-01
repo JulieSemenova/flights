@@ -12,23 +12,23 @@ import {
 import { API_KEY, LANG_MAP, PAGE_SIZE } from '../../constants';
 
 export const SELECT_AIRPORT: string = 'airport/SELECT_AIRPORT';
+export const FETCH_ALL_FLIGHTS_SUCCESS: string = 'airport/FETCH_ALL_FLIGHTS_SUCCESS';
 export const FETCH_FLIGHTS: string = 'airport/FETCH_FLIGHTS';
 export const FETCH_FLIGHTS_SUCCESS: string = 'airport/FETCH_FLIGHTS_SUCCESS';
-export const FETCH_DELAYS_SUCCESS: string = 'airport/FETCH_DELAYS_SUCCESS';
 export const FETCH_FLIGHTS_FAIL: string = 'airport/FETCH_FLIGHTS_FAIL';
 
 export const initialState: IFlights.State = {
   isFetching: false,
   isFetched: false,
+  allFlights: {
+    total: 0,
+    flights: []
+  },
   arrivals: {
     total: 0,
     flights: []
   },
   departures: {
-    total: 0,
-    flights: []
-  },
-  delays: {
     total: 0,
     flights: []
   },
@@ -53,12 +53,16 @@ export default function reducer(
         isFetched: true,
         [flightEvent]: action.data
       };
-    case FETCH_DELAYS_SUCCESS:
+    case FETCH_ALL_FLIGHTS_SUCCESS:
+      const allFlights = state.allFlights.flights.concat(action.data.flights);
       return {
         ...state,
         isFetching: false,
         isFetched: true,
-        delays: action.data
+        allFlights: { 
+          total: action.data.total, 
+          flights: allFlights
+        }
       };
     case FETCH_FLIGHTS_FAIL:
       return {
@@ -87,7 +91,7 @@ export const fetchFlights: IFlights.AC_Fetch = (
 ): any => {
   const selectedDate = date ? date : new Date().toISOString();
 
-  return function(dispatch: Dispatch) {
+  return function (dispatch: Dispatch) {
     dispatch(fetchingFlights());
     axios
       .get(
@@ -100,26 +104,54 @@ export const fetchFlights: IFlights.AC_Fetch = (
   };
 };
 
-export const fetchDelayedFlights: IFlights.AC_FetchDelay = (
+export const fetchAllFlights: IFlights.AC_FetchAll = (
   airport: AirportCode,
   lang: LanguageType,
+  limit: number,
   offset: number,
   date?: ISOString
 ): any => {
   const selectedDate = date ? date : new Date().toISOString();
-  return function(dispatch: Dispatch) {
+  return function (dispatch: Dispatch) {
     dispatch(fetchingFlights());
     axios
       .get(
-        `/schedule/?apikey=${API_KEY}&station=${airport}&transport_types=plane&date=${selectedDate}&offset=${offset}&limit=500&lang=${
-          // TODO: limit
+        `/schedule/?apikey=${API_KEY}&station=${airport}&transport_types=plane&date=${selectedDate}&offset=${offset}&limit=${limit}&lang=${
           LANG_MAP[lang]
         }`
       )
-      .then(response => dispatch(fetchDelaysSuccess(response)))
+      .then(response => dispatch(fetchAllFlightsSuccess(response)))
+      .then(response => {
+        if (response.data.total > offset + limit) {
+          dispatch(fetchAllFlights(airport, lang, response.data.total - limit, limit, date));
+        }
+      })
       .catch(error => dispatch(fetchFlightsError(error)));
   };
 };
+
+export const fetchAllFlightsSuccess: any = (data: any): Action => {
+  return {
+    data: {
+      total: data.data.pagination.total,
+      flights: data.data.schedule.map((flight: any) => {
+        return {
+          arrival: flight.arrival,
+          departure: flight.departure,
+          is_fuzzy: flight.is_fuzzy,
+          thread: {
+            title: flight.thread.title,
+            number: flight.thread.number,
+            uid: flight.thread.uid,
+            carrier: flight.thread.carrier.title
+          }
+        };
+      })
+    },
+    type: FETCH_ALL_FLIGHTS_SUCCESS
+  };
+};
+
 
 export const fetchFlightsSuccess: any = (data: any, event: EventType): Action => {
   return {
@@ -144,31 +176,6 @@ export const fetchFlightsSuccess: any = (data: any, event: EventType): Action =>
   };
 };
 
-export const fetchDelaysSuccess: any = (data: any, event: EventType): Action => {
-  const delayedFlights: Array<any> = data.data.schedule.filter(
-    (flight: any) => flight.is_fuzzy === true
-  );
-  return {
-    event,
-    data: {
-      total: delayedFlights.length,
-      flights: delayedFlights.map((flight: any) => {
-        return {
-          arrival: flight.arrival,
-          departure: flight.departure,
-          is_fuzzy: flight.is_fuzzy,
-          thread: {
-            title: flight.thread.title,
-            number: flight.thread.number,
-            uid: flight.thread.uid,
-            carrier: flight.thread.carrier.title
-          }
-        };
-      })
-    },
-    type: FETCH_DELAYS_SUCCESS
-  };
-};
 
 export const fetchFlightsError: any = (error: AirportCode): Action => {
   return {

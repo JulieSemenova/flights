@@ -18,3 +18,5 @@ export const ERROR_MAP = {
   ru: 'Произошла ошибка. Повторите запрос позже',
   en: 'An error has occurred. Try the request later'
 };
+
+export const START_LIMIT = 200;
