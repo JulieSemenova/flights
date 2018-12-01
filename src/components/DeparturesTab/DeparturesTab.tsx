@@ -100,16 +100,17 @@ class DeparturesTab extends React.Component<IProps, IState> {
 
   render() {
     const { departures, isFetching, error, language, searchFlights } = this.props;
+    const isSearchingFlights = searchFlights && searchFlights.length > 0;
     return (
       <div className="departures">
         {error && <Alert type="error" message={ERROR_MAP[language]} />}
         <Table
-          dataSource={searchFlights ? searchFlights : departures.flights}
+          dataSource={isSearchingFlights ? searchFlights : departures.flights}
           columns={this.getColumns()}
           rowKey={(record: IFlights.Flight, dataIndex: number) => `${record.thread.uid}+${dataIndex}`}
           loading={isFetching}
           pagination={{
-            total: searchFlights ? searchFlights.length : departures.total,
+            total: isSearchingFlights ? searchFlights.length : departures.total,
             onChange: this.handleChangePage,
             pageSize: PAGE_SIZE
           }}

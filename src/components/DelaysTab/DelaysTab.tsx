@@ -81,16 +81,17 @@ class DelaysTab extends React.Component<IProps> {
 
   render() {
     const { isFetching, error, language, searchFlights } = this.props;
+    const isSearchingFlights = searchFlights && searchFlights.length > 0;
     return (
       <div className="delays">
         {error && <Alert type="error" message={ERROR_MAP[language]} />}
         <Table
-          dataSource={searchFlights ? searchFlights : this.getData()}
+          dataSource={isSearchingFlights ? searchFlights : this.getData()}
           columns={this.getColumns()}
           rowKey={(record: IFlights.Flight, dataIndex: number) => `${record.thread.uid}+${dataIndex}`}
           loading={isFetching}
           pagination={{
-            total: searchFlights ? searchFlights.length : this.getData().length,
+            total: isSearchingFlights ? searchFlights.length : this.getData().length,
             pageSize: PAGE_SIZE
           }}
         />
