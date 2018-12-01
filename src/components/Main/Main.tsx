@@ -39,14 +39,12 @@ interface IState {
   copyright: any;
 }
 
-
-
 export class Main extends React.Component<IProps, IState> {
   state: IState = {
     language: 'ru',
     airportCode: 's9600216',
     date: format(new Date(), FORMAT_FULL_DAY),
-    searchFlights: [], 
+    searchFlights: [],
     copyright: {}
   };
 
@@ -56,7 +54,7 @@ export class Main extends React.Component<IProps, IState> {
       .get(
         `/copyright/?apikey=${API_KEY}&format=json`
       )
-      .then(response => this.setState({copyright: response.data.copyright}))
+      .then(response => this.setState({ copyright: response.data.copyright }))
       .catch(error => console.log(error));
   }
 
