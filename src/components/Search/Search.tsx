@@ -69,12 +69,6 @@ class SearchComponent extends React.Component<IProps, IState> {
     getFlights(flights);
   };
 
-  handleBlur = () => {
-    const { getFlights } = this.props;
-
-    this.setState({ searchString: '', amount: null }, () => getFlights([]));
-  }
-
   renderAmount = () => {
     const { amount } = this.state;
     if (amount !== null) {
@@ -94,7 +88,6 @@ class SearchComponent extends React.Component<IProps, IState> {
           onChange={this.handleChange('searchString')}
           style={{ marginBottom: '10px', width: '400px' }}
           value={this.state.searchString}
-          onBlur={this.handleBlur}
         />
         {this.renderAmount()}
       </div>
