@@ -11,7 +11,10 @@ const dictionaryMock = {
     tomorrow: 'завтра',
     domodedovo: 'домодедово',
     sheremetyevo: 'шереметьево',
-    vnukovo: 'внуково'
+    vnukovo: 'внуково',
+    flights: 'рейсов найдено:',
+    noFlights: 'рейсов нет'
+
   },
   en: {
     arrivals: 'arrivals',
@@ -24,7 +27,9 @@ const dictionaryMock = {
     tomorrow: 'tomorrow',
     domodedovo: 'domodedovo',
     sheremetyevo: 'sheremetyevo',
-    vnukovo: 'vnukovo'
+    vnukovo: 'vnukovo',
+    flights: 'flights found:',
+    noFlights: 'no flights'
   }
 };
 

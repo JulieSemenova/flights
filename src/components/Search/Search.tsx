@@ -11,6 +11,7 @@ import {
 } from '../../types';
 import { fetchAllFlights } from '../../redux/reducers/flights';
 import { START_LIMIT } from '../../constants';
+import GetTranslation from '../GetTranslation/GetTranslation';
 
 const Search = Input.Search;
 
@@ -28,11 +29,13 @@ interface IProps extends OwnProps {
 
 interface IState {
   searchString: string;
+  amount: number | null;
 }
 
 class SearchComponent extends React.Component<IProps, IState> {
   state: IState = {
     searchString: '',
+    amount: null
   };
 
   componentDidMount() {
@@ -62,19 +65,39 @@ class SearchComponent extends React.Component<IProps, IState> {
     const flights = allFlights.flights.filter((flight: IFlights.Flight) =>
       flight.thread.number.match(searchRegExp)
     );
+    this.setState({ amount: flights.length });
     getFlights(flights);
   };
+
+  handleBlur = () => {
+    const { getFlights } = this.props;
+
+    this.setState({ searchString: '', amount: null }, () => getFlights([]));
+  }
+
+  renderAmount = () => {
+    const { amount } = this.state;
+    if (amount !== null) {
+      return (
+        <div style={{ display: 'inline-block', marginLeft: '20px' }}>
+          {amount !== 0 ? <React.Fragment><GetTranslation word="flights" /> {amount}</React.Fragment> : <GetTranslation word="noFlights" />}
+        </div>
+      );
+    }
+    return null;
+  }
 
   render() {
     return (
       <div className="search">
         <Search
           onChange={this.handleChange('searchString')}
-          style={{ marginBottom: '10px' }}
+          style={{ marginBottom: '10px', width: '400px' }}
           value={this.state.searchString}
+          onBlur={this.handleBlur}
         />
+        {this.renderAmount()}
       </div>
-
     );
   }
 }
